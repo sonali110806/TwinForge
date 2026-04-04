@@ -1,0 +1,25 @@
+
+INCIDENT POST-MORTEM — TwinForge
+Generated: 2026-04-04 18:14:12
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SUMMARY
+Incident auto-detected and resolved by TwinForge.
+No human intervention required.
+
+ROOT CAUSE
+Metric    : cpu_percent
+Value     : 92%
+Cause     : Traffic spike on /checkout
+
+FIX APPLIED
+Fix used  : Apply Rate Limiting
+Confidence: 94%
+Time taken: 42 seconds
+Auto fixed: YES — zero human needed
+
+PREVENTION
+1. Monitor cpu_percent proactively
+2. Auto-scaling configured for high traffic
+3. This fix pattern saved to TwinForge memory
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
