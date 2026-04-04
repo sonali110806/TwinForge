@@ -1,0 +1,37 @@
+@@ -0,0 +1,36 @@
+import pandas as pd
+import numpy as np
+
+
+def predict_cpu_trend():
+    try:
+        # Read history data
+        df = pd.read_csv("monitor/history.csv")
+
+        # Need at least some data
+        if len(df) < 5:
+            return "⏳ Collecting data..."
+
+        # Take last 10 CPU values
+        cpu_values = df["cpu"].tail(10).values
+
+        # Create x-axis (0,1,2,3...)
+        x = np.arange(len(cpu_values))
+
+        # Fit a line (trend)
+        slope = np.polyfit(x, cpu_values, 1)[0]
+
+        # 🔥 PREDICTION LOGIC
+        if slope > 0.5:
+            # Estimate time to crash (simple formula)
+            seconds = int(100 / slope)
+            return f"⚠️ CPU rising fast → Possible crash in ~{seconds} sec"
+
+        elif slope > 0.2:
+            return "⚠️ CPU gradually increasing"
+
+        else:
+            return "✅ CPU stable"
+
+    except Exception as e:
+        return f"Prediction error: {e}"
