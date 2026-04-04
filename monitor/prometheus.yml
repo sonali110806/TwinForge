@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 @@ -0,0 +1,8 @@
+=======
+>>>>>>> f456c65 (Initial TwinForge fullstack setup)
 global:
   scrape_interval: 5s
 
@@ -6,3 +9,7 @@ scrape_configs:
   - job_name: "cadvisor"
     static_configs:
       - targets: ["cadvisor:8080"]
+<<<<<<< HEAD
+=======
+      
+>>>>>>> f456c65 (Initial TwinForge fullstack setup)
