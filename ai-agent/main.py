@@ -1,124 +1,59 @@
-<<<<<<< HEAD
 # main.py
 
-from detector import detect
-from decision import analyze
-from tournament import run_tournament
-from confidence import evaluate_confidence
-from postmortem import generate_report
+from postmortem import analyze_issue
+from agent import AI_Agent
+from confidence import calculate_confidence
+from prompts import get_prompt
+from tournament import submit_to_tournament
+from fixes import generate_fixes
 
-def run_ai_agent(metrics=None):
-    # Step 1: Simulated system metrics if none provided
-    if metrics is None:
-        metrics = {"cpu": 95, "memory": 85}
+import logging
 
-    print("\n🔄 Monitoring system...")
+# -----------------------
+# Logging setup
+# -----------------------
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    # Step 2: Detect anomaly
-    issue = detect(metrics)
-    print("Issue Detected:", issue)
+def main():
+    logging.info("Starting AI agent system...")
 
-    if issue:
-        # Step 3: AI Decision (root cause + fixes)
-        decision = analyze(issue)
-        print("Decision:", decision)
+    # Step 1: Detect problem using postmortem analysis
+    issue_data = analyze_issue()
+    logging.info(f"Issue detected: {issue_data}")
 
-        # Step 4: Run fix tournament
-        best_fix = run_tournament(decision)
-        print("Best Fix Selected:", best_fix)
+    # Step 2: Prepare prompt for AI agent
+    prompt = get_prompt(issue_data)
+    logging.info(f"Generated prompt for agent: {prompt}")
 
-        # Step 5: Confidence-based action
-        action = evaluate_confidence(best_fix)
-        print("Final Action:", action)
+    # Step 3: Initialize AI agent
+    agent = AI_Agent(prompt)
+    decision = agent.decide()
+    logging.info(f"Agent decision: {decision}")
 
-        # Step 6: Generate post-mortem report
-        report = generate_report(issue, best_fix)
-        print("Post-Mortem Report:", report)
+    # Step 4: Generate possible fixes based on decision
+    fixes = generate_fixes(decision)
+    logging.info(f"Generated fixes: {fixes}")
 
-        return {
-            "issue": issue,
-            "decision": decision,
-            "fix": best_fix,
-            "action": action,
-            "report": report
-        }
+    # Step 5: Calculate confidence scores for each fix
+    scored_fixes = []
+    for fix in fixes:
+        confidence_score = calculate_confidence(fix, issue_data)
+        scored_fixes.append({'fix': fix, 'confidence': confidence_score})
+    logging.info(f"Scored fixes: {scored_fixes}")
 
-    else:
-        print("✅ System is running normally")
-        return {
-            "issue": "No anomaly detected",
-            "decision": "",
-            "fix": "",
-            "action": "No action needed",
-            "report": ""
-        }
+    # Step 6: Submit top fixes to tournament / evaluation system
+    top_fixes = sorted(scored_fixes, key=lambda x: x['confidence'], reverse=True)
+    submit_to_tournament(top_fixes)
+    logging.info("Top fixes submitted to tournament successfully.")
 
-
-# Run directly for testing
-if __name__ == "__main__":
-    run_ai_agent()
-=======
-from detector   import detect
-from decision   import analyze
-from tournament import run_tournament
-from confidence import evaluate_confidence
-from postmortem import generate_report
-from agent      import build_prompt
-
-
-def run_ai_agent(metrics: dict | None = None) -> dict:
-    """
-    Full Digital-Twin agent pipeline:
-    1. Detect anomaly  2. Analyze  3. Tournament on shadow twin
-    4. Confidence eval  5. Post-mortem report
-    """
-    if metrics is None:
-        metrics = {"cpu": 95, "memory": 85}
-
-    print("\n🔄 AI Agent — monitoring system…")
-
-    issue = detect(metrics)
-    print(f"  Issue: {issue}")
-
-    if not issue:
-        print("  ✅ System healthy.")
-        return {
-            "issue":      None,
-            "decision":   {},
-            "tournament": {},
-            "confidence": {},
-            "report":     {"summary": "System healthy — no action needed."},
-            "prompt":     "",
-        }
-
-    decision   = analyze(issue)
-    prompt     = build_prompt(issue, metrics)
-    print(f"  Root cause: {decision['root_cause']}")
-
-    print("  Running fix tournament on digital twin…")
-    tournament = run_tournament(decision)
-    print(f"  Winner: {tournament['winner']}")
-
-    confidence = evaluate_confidence(
-        tournament["winner"],
-        simulation_passed=tournament["twin_passed"],
-    )
-    print(f"  Confidence: {confidence['label']} ({confidence['score']})")
-
-    report = generate_report(issue, tournament["winner"], confidence, tournament)
-    print(f"  {report['summary']}")
-
-    return {
-        "issue":      issue,
-        "decision":   decision,
-        "tournament": tournament,
-        "confidence": confidence,
-        "report":     report,
-        "prompt":     prompt,
-    }
-
+    logging.info("AI agent system run completed.")
 
 if __name__ == "__main__":
-    import json
-    print(json.dumps(run_ai_agent(), indent=2))
->>>>>>> f456c65 (Initial TwinForge fullstack setup)
+    main()
+
+
+        
+           
+        
+    
+
