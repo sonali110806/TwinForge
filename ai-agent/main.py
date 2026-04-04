@@ -1,55 +1,62 @@
 # main.py
 
-from postmortem import analyze_issue
-from agent import AI_Agent
-from confidence import calculate_confidence
-from prompts import get_prompt
-from tournament import submit_to_tournament
-from fixes import generate_fixes
+from detector import detect
+from decision import analyze
+from tournament import run_tournament
+from confidence import evaluate_confidence
+from postmortem import generate_report
 
-import logging
+def run_ai_agent(metrics=None):
+    # Step 1: Simulated system metrics if none provided
+    if metrics is None:
+        metrics = {"cpu": 95, "memory": 85}
 
-# -----------------------
-# Logging setup
-# -----------------------
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    print("\n🔄 Monitoring system...")
 
-def main():
-    logging.info("Starting AI agent system...")
+    # Step 2: Detect anomaly
+    issue = detect(metrics)
+    print("Issue Detected:", issue)
 
-    # Step 1: Detect problem using postmortem analysis
-    issue_data = analyze_issue()
-    logging.info(f"Issue detected: {issue_data}")
+    if issue:
+        # Step 3: AI Decision (root cause + fixes)
+        decision = analyze(issue)
+        print("Decision:", decision)
 
-    # Step 2: Prepare prompt for AI agent
-    prompt = get_prompt(issue_data)
-    logging.info(f"Generated prompt for agent: {prompt}")
+        # Step 4: Run fix tournament
+        best_fix = run_tournament(decision)
+        print("Best Fix Selected:", best_fix)
 
-    # Step 3: Initialize AI agent
-    agent = AI_Agent(prompt)
-    decision = agent.decide()
-    logging.info(f"Agent decision: {decision}")
+        # Step 5: Confidence-based action
+        action = evaluate_confidence(best_fix)
+        print("Final Action:", action)
 
-    # Step 4: Generate possible fixes based on decision
-    fixes = generate_fixes(decision)
-    logging.info(f"Generated fixes: {fixes}")
+        # Step 6: Generate post-mortem report
+        report = generate_report(issue, best_fix)
+        print("Post-Mortem Report:", report)
 
-    # Step 5: Calculate confidence scores for each fix
-    scored_fixes = []
-    for fix in fixes:
-        confidence_score = calculate_confidence(fix, issue_data)
-        scored_fixes.append({'fix': fix, 'confidence': confidence_score})
-    logging.info(f"Scored fixes: {scored_fixes}")
+        return {
+            "issue": issue,
+            "decision": decision,
+            "fix": best_fix,
+            "action": action,
+            "report": report
+        }
 
-    # Step 6: Submit top fixes to tournament / evaluation system
-    top_fixes = sorted(scored_fixes, key=lambda x: x['confidence'], reverse=True)
-    submit_to_tournament(top_fixes)
-    logging.info("Top fixes submitted to tournament successfully.")
+    else:
+        print("✅ System is running normally")
+        return {
+            "issue": "No anomaly detected",
+            "decision": "",
+            "fix": "",
+            "action": "No action needed",
+            "report": ""
+        }
 
-    logging.info("AI agent system run completed.")
 
+# Run directly for testing
 if __name__ == "__main__":
-    main()
+    run_ai_agent()
+  
 
 
         
