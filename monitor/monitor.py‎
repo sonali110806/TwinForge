@@ -1,0 +1,79 @@
+@@ -0,0 +1,78 @@
+import requests
+import time
+from datetime import datetime
+from predictor import predict_cpu_trend
+
+PROMETHEUS_URL = "http://localhost:9090"
+
+
+def get_cpu_usage():
+    query = "rate(container_cpu_usage_seconds_total[1m])"
+    url = f"{PROMETHEUS_URL}/api/v1/query?query={query}"
+    
+    try:
+        res = requests.get(url).json()
+        values = res["data"]["result"]
+
+        if not values:
+            return 0
+
+        total_cpu = sum(float(v["value"][1]) for v in values)
+        return round(total_cpu * 100, 2)
+
+    except Exception as e:
+        print("Error fetching CPU:", e)
+        return 0
+
+
+def get_memory_usage():
+    query = "container_memory_usage_bytes"
+    url = f"{PROMETHEUS_URL}/api/v1/query?query={query}"
+
+    try:
+        res = requests.get(url).json()
+        values = res["data"]["result"]
+
+        if not values:
+            return 0
+
+        total_memory = sum(float(v["value"][1]) for v in values)
+        return round(total_memory / (1024 * 1024), 2)
+
+    except Exception as e:
+        print("Error fetching Memory:", e)
+        return 0
+
+
+def check_alerts(cpu, memory):
+    if cpu > 80:
+        print("🚨 ALERT: High CPU Usage!")
+
+    if memory > 1500:
+        print("🚨 ALERT: High Memory Usage!")
+
+
+def log_to_csv(cpu, memory):
+    timestamp = datetime.now().strftime("%H:%M:%S")
+    
+    with open("monitor/history.csv", "a") as f:
+        f.write(f"{timestamp},{cpu},{memory},0\n")
+
+
+# 🔥 MAIN LOOP
+while True:
+    cpu = get_cpu_usage()
+    memory = get_memory_usage()
+
+    print("\n===== SYSTEM METRICS =====")
+    print(f"CPU Usage: {cpu}%")
+    print(f"Memory Usage: {memory} MB")
+
+    check_alerts(cpu, memory)
+
+    prediction = predict_cpu_trend()
+    print(prediction)
+
+    log_to_csv(cpu, memory)
+
+    time.sleep(5)
