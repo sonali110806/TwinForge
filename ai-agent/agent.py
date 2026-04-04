@@ -2,9 +2,9 @@ def run_agent(data):
     return {
         "root_cause": "CPU overload",
         "fixes": [
-            {"id": "fix_a", "action": "restart_web", "risk_level": "low"},
-            {"id": "fix_b", "action": "scale_memory", "risk_level": "medium"},
-            {"id": "fix_c", "action": "rate_limit", "risk_level": "low"}
+            {"id": "a", "action": "restart_web"},
+            {"id": "b", "action": "scale_memory"},
+            {"id": "c", "action": "rate_limit"}
         ],
-        "recommended": "fix_a"
+        "recommended": "a"
     }
