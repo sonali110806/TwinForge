@@ -1,6 +1,0 @@
-chroma_db/
-chromadb/
-*.sqlite
-*.db
-__pycache__/
-.env
