@@ -35,7 +35,7 @@ def run_prediction(file_path="data.csv"):
 
     except Exception as e:
         # Fallback if Prophet fails
-        print("⚠️ Prophet failed, using simple prediction")
+        print("Prophet failed, using simple prediction")
         values = simple_prediction(df)
 
         future_times = pd.date_range(start=df['ds'].iloc[-1], periods=5, freq='min')
